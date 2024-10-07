@@ -18,6 +18,7 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
      * the entries that this DataSet represents / holds together
      */
     protected List<T> mEntries;
+    protected SegmentTree segmentTree;
 
     /**
      * maximum y-value in the value array
@@ -55,6 +56,8 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
         if (mEntries == null)
             mEntries = new ArrayList<T>();
 
+        segmentTree = new SegmentTree(mEntries);
+
         calcMinMax();
     }
 
@@ -78,20 +81,28 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
     public void calcMinMaxY(float fromX, float toX) {
         mYMax = -Float.MAX_VALUE;
         mYMin = Float.MAX_VALUE;
-        
+
         if (mEntries == null || mEntries.isEmpty())
             return;
 
-        int indexFrom = getEntryIndex(fromX, Float.NaN, Rounding.DOWN);
-        int indexTo = getEntryIndex(toX, Float.NaN, Rounding.UP);
-
-        if (indexTo < indexFrom) return;
-
-        for (int i = indexFrom; i <= indexTo; i++) {
-
-            // only recalculate y
-            calcMinMaxY(mEntries.get(i));
+//        int indexFrom = getEntryIndex(fromX, Float.NaN, Rounding.DOWN);
+//        int indexTo = getEntryIndex(toX, Float.NaN, Rounding.UP);
+        Entry minEntry = segmentTree.queryMinInRange(fromX, toX);
+        Entry maxEntry = segmentTree.queryMaxInRange(fromX, toX);
+        if (minEntry != null) {
+            mYMin = minEntry.getY();
         }
+        if (maxEntry != null) {
+            mYMax = maxEntry.getY();
+        }
+
+//        if (indexTo < indexFrom) return;
+//
+//        for (int i = indexFrom; i <= indexTo; i++) {
+//
+//            // only recalculate y
+//            calcMinMaxY(mEntries.get(i));
+//        }
     }
 
     /**
@@ -170,6 +181,7 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
      */
     public void setEntries(List<T> entries) {
         mEntries = entries;
+        segmentTree = new SegmentTree(mEntries);
         notifyDataSetChanged();
     }
 
@@ -249,11 +261,13 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
         } else {
             mEntries.add(e);
         }
+        segmentTree = new SegmentTree(mEntries); // todo call update here --
     }
 
     @Override
     public void clear() {
         mEntries.clear();
+        segmentTree = new SegmentTree(mEntries);
         notifyDataSetChanged();
     }
 
@@ -319,6 +333,8 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
 
     @Override
     public int getEntryIndex(float xValue, float closestToY, Rounding rounding) {
+
+        // todo needs to be better
 
         if (mEntries == null || mEntries.isEmpty())
             return -1;
