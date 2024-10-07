@@ -331,11 +331,18 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
         return mEntries.get(index);
     }
 
+    /**
+     * PSA on top of the parent documentation.
+     * This method can cause ANRs when dataset is too large.
+     *
+     * @param xValue the x-value
+     * @param closestToY If there are multiple y-values for the specified x-value,
+     * @param rounding determine whether to round up/down/closest
+     *                 if there is no Entry matching the provided x-value
+     * @return
+     */
     @Override
     public int getEntryIndex(float xValue, float closestToY, Rounding rounding) {
-
-        // todo needs to be better
-
         if (mEntries == null || mEntries.isEmpty())
             return -1;
 
