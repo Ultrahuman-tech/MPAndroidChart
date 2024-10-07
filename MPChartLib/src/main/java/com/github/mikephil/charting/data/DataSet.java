@@ -85,8 +85,6 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
         if (mEntries == null || mEntries.isEmpty())
             return;
 
-//        int indexFrom = getEntryIndex(fromX, Float.NaN, Rounding.DOWN);
-//        int indexTo = getEntryIndex(toX, Float.NaN, Rounding.UP);
         Entry minEntry = segmentTree.queryMinInRange(fromX, toX);
         Entry maxEntry = segmentTree.queryMaxInRange(fromX, toX);
         if (minEntry != null) {
@@ -95,6 +93,8 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
         if (maxEntry != null) {
             mYMax = maxEntry.getY();
         }
+//        int indexFrom = getEntryIndex(fromX, Float.NaN, Rounding.DOWN);
+//        int indexTo = getEntryIndex(toX, Float.NaN, Rounding.UP);
 
 //        if (indexTo < indexFrom) return;
 //
