@@ -1,9 +1,17 @@
 package com.github.mikephil.charting.data
 
+import java.util.Arrays
 import kotlin.math.ceil
 import kotlin.math.ln
 import kotlin.math.pow
 
+
+/**
+ * This is a Segment Tree implementation over a list of [Entry].
+ * Points to consider
+ * - the list [arr] should be sorted by [Entry.x]
+ * - [queryMinInRange] & [queryMaxInRange] may use [Arrays.binarySearch] so its limitations also apply
+ */
 class SegmentTree(private val arr: List<Entry>) {
 
     private val treeForMin: Array<Entry?>
@@ -11,7 +19,7 @@ class SegmentTree(private val arr: List<Entry>) {
     private val treeForMax: Array<Entry?>
     private val lazyForMax: FloatArray
     private val entryXToIndexMap = mutableMapOf<Float, Int>()
-    private val listOfEntryX = mutableListOf<Float>()
+    private val listOfEntryX = FloatArray(arr.size)
 
     init {
         val n = arr.size
@@ -21,7 +29,9 @@ class SegmentTree(private val arr: List<Entry>) {
         val treeSize = 2 * (2.0).pow(x.toDouble()).toInt() - 1
 
         arr.forEachIndexed { index, entry -> entryXToIndexMap[entry.x] = index }
-        arr.mapTo(listOfEntryX) { it.x }
+        arr.map { it.x }.let {
+            listOfEntryX.indices.forEach { index -> listOfEntryX[index] = it[index] }
+        }
 
         treeForMin = arrayOfNulls(4 * n) // Allocate space for the tree
         lazyForMin = FloatArray(4 * n) // Allocate space for lazy propagation
@@ -66,7 +76,13 @@ class SegmentTree(private val arr: List<Entry>) {
     }
 
     fun queryMinInRange(fromEntryX: Float, toEntryX: Float): Entry? {
-        return queryMinInRange(node = 1, start = 0, end = arr.size - 1, left = entryXToIndexMap[fromEntryX] ?: 0, right = entryXToIndexMap[toEntryX] ?: (arr.size - 1))
+        return this.queryMinInRange(
+            node = 1,
+            start = 0,
+            end = arr.size - 1,
+            left = entryXToIndexMap[fromEntryX] ?: entryXToIndexMap[usingBinarySearch(fromEntryX)] ?: 0,
+            right = entryXToIndexMap[toEntryX] ?: entryXToIndexMap[usingBinarySearch(toEntryX)] ?: (arr.size - 1),
+        )
     }
 
     private fun queryMinInRange(node: Int, start: Int, end: Int, left: Int, right: Int): Entry? {
@@ -96,7 +112,13 @@ class SegmentTree(private val arr: List<Entry>) {
     }
 
     fun queryMaxInRange(fromEntryX: Float, toEntryX: Float): Entry? {
-        return queryForMax(1, 0, arr.size - 1, left = entryXToIndexMap[fromEntryX] ?: 0, right = entryXToIndexMap[toEntryX] ?: (arr.size - 1))
+        return queryForMax(
+            node = 1,
+            start = 0,
+            end = arr.size - 1,
+            left = entryXToIndexMap[fromEntryX] ?: entryXToIndexMap[usingBinarySearch(fromEntryX)] ?: 0,
+            right = entryXToIndexMap[toEntryX] ?: entryXToIndexMap[usingBinarySearch(toEntryX)] ?: (arr.size - 1),
+        )
     }
 
     private fun queryForMax(node: Int, start: Int, end: Int, left: Int, right: Int): Entry? {
@@ -125,6 +147,9 @@ class SegmentTree(private val arr: List<Entry>) {
         return maxEntry(leftChild, rightChild) // Change here
     }
 
+    /**
+     * Not supported. Not tested. Don't use.
+     */
     fun update(left: Float, right: Float, value: Float) {
         updateForMin(1, 0, arr.size - 1, left, right, value)
         updateForMax(1, 0, arr.size - 1, left, right, value)
@@ -198,5 +223,25 @@ class SegmentTree(private val arr: List<Entry>) {
 
     private fun getMid(start: Int, end: Int): Int {
         return start + (end - start) / 2
+    }
+
+    private fun usingBinarySearch(value: Float): Float {
+        if (value <= listOfEntryX[0]) {
+            return listOfEntryX[0]
+        }
+        if (value >= listOfEntryX[listOfEntryX.size - 1]) {
+            return listOfEntryX[listOfEntryX.size - 1]
+        }
+
+        val result = Arrays.binarySearch(listOfEntryX, value)
+        if (result >= 0) {
+            return listOfEntryX[result]
+        }
+
+        val insertionPoint = -result - 1
+        return if ((listOfEntryX[insertionPoint] - value) < (value - listOfEntryX[insertionPoint - 1]))
+            listOfEntryX[insertionPoint]
+        else
+            listOfEntryX[insertionPoint - 1]
     }
 }
