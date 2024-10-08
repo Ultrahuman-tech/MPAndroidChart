@@ -66,7 +66,7 @@ class SegmentTree(private val arr: List<Entry>) {
     }
 
     fun queryMinInRange(fromEntryX: Float, toEntryX: Float): Entry? {
-        return queryMinInRange(node = 1, start = 0, end = arr.size - 1, left = entryXToIndexMap[fromEntryX]!!, right = entryXToIndexMap[toEntryX]!!)
+        return queryMinInRange(node = 1, start = 0, end = arr.size - 1, left = entryXToIndexMap[fromEntryX] ?: 0, right = entryXToIndexMap[toEntryX] ?: (arr.size - 1))
     }
 
     private fun queryMinInRange(node: Int, start: Int, end: Int, left: Int, right: Int): Entry? {
@@ -96,7 +96,7 @@ class SegmentTree(private val arr: List<Entry>) {
     }
 
     fun queryMaxInRange(fromEntryX: Float, toEntryX: Float): Entry? {
-        return queryForMax(1, 0, arr.size - 1, left = entryXToIndexMap[fromEntryX]!!, right = entryXToIndexMap[toEntryX]!!)
+        return queryForMax(1, 0, arr.size - 1, left = entryXToIndexMap[fromEntryX] ?: 0, right = entryXToIndexMap[toEntryX] ?: (arr.size - 1))
     }
 
     private fun queryForMax(node: Int, start: Int, end: Int, left: Int, right: Int): Entry? {
