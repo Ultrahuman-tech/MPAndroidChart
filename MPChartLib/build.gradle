@@ -29,12 +29,16 @@ android {
     kotlin {
         jvmToolchain(17)
     }
+    tasks.withType(Test) {
+        useJUnitPlatform()
+    }
 }
 
 dependencies {
     implementation 'androidx.annotation:annotation:1.0.0'
     implementation 'androidx.core:core-ktx:1.13.1'
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
 }
 
 task sourcesJar(type: Jar) {
