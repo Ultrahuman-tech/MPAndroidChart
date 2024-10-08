@@ -38,19 +38,26 @@ class SegmentTreeTest {
         assertEquals(true, Entry(4f, 1f).equalTo(q1))
 
         // Test case 2: Query single element
+        val q7 = segmentTree.queryMinInRange(fromEntryX = 5f, toEntryX = 5f)
+        assertNotNull(q7)
+        assertEquals(true, Entry(5f, 6f).equalTo(q7))
         val q2 = segmentTree.queryMinInRange(fromEntryX = 3f, toEntryX = 3f)
         assertNotNull(q2)
-        println(q2)
         assertEquals(true, Entry(3f, 8f).equalTo(q2))
+        val q5 = segmentTree.queryMinInRange(fromEntryX = 1f, toEntryX = 1f)
+        assertNotNull(q5)
+        assertEquals(true, Entry(1f, 5f).equalTo(q5))
 
         // Test case 3: Overlapping ranges
         val q3 = segmentTree.queryMinInRange(fromEntryX = 1f, toEntryX = 3f)
         assertNotNull(q3)
-        println(q2)
         assertEquals(true, Entry(2f, 3f).equalTo(q3))
         val q4 = segmentTree.queryMinInRange(fromEntryX = 3f, toEntryX = 5f)
         assertNotNull(q4)
         assertEquals(true, Entry(4f, 1f).equalTo(q4))
+        val q6 = segmentTree.queryMinInRange(fromEntryX = 3f, toEntryX = 4f)
+        assertNotNull(q6)
+        assertEquals(true, Entry(4f, 1f).equalTo(q6))
 
         // Test case 4: Update and query
         segmentTree.update(2f, 4f, -2f)
@@ -59,6 +66,30 @@ class SegmentTreeTest {
 
     @org.junit.jupiter.api.Test
     fun queryMaxInRange() {
+        val entries = listOf(
+            Entry(1f, 5f),
+            Entry(2f, 3f),
+            Entry(3f, 8f),
+            Entry(4f, 1f),
+            Entry(5f, 6f)
+        )
+        val segmentTree = SegmentTree(entries)
+        // Test case 1: Query entire range
+        val q1 = segmentTree.queryMaxInRange(fromEntryX = 1f, toEntryX = 5f)
+        assertEquals(true, Entry(3f, 8f).equalTo(q1))
+
+        // Test case 2: Query single element
+        val q2 = segmentTree.queryMaxInRange(fromEntryX = 3f, toEntryX = 3f)
+        assertNotNull(q2)
+        assertEquals(true, Entry(3f, 8f).equalTo(q2))
+
+        // Test case 3: Overlapping ranges
+        val q3 = segmentTree.queryMaxInRange(fromEntryX = 1f, toEntryX = 3f)
+        assertNotNull(q3)
+        assertEquals(true, Entry(3f, 8f).equalTo(q3))
+        val q4 = segmentTree.queryMaxInRange(fromEntryX = 3f, toEntryX = 5f)
+        assertNotNull(q4)
+        assertEquals(true, Entry(3f, 8f).equalTo(q4))
     }
 
     @org.junit.jupiter.api.Test
