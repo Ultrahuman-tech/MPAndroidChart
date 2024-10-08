@@ -35,10 +35,14 @@ class SegmentTree(private val arr: List<Entry>) {
 
         treeForMin = arrayOfNulls(4 * n) // Allocate space for the tree
         lazyForMin = FloatArray(4 * n) // Allocate space for lazy propagation
-        buildTreeForMin(1, 0, n - 1)
+        if (n > 0) {
+            buildTreeForMin(1, 0, n - 1)
+        }
         treeForMax = arrayOfNulls(4 * n)
         lazyForMax = FloatArray(4 * n)
-        buildTreeForMax(1, 0, n - 1)
+        if (n > 0) {
+            buildTreeForMax(1, 0, n - 1)
+        }
     }
 
     private fun buildTreeForMin(node: Int, start: Int, end: Int) {
