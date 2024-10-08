@@ -51,11 +51,11 @@ class SegmentTree(private val arr: List<Entry>) {
         return if (entry1.y > entry2.y) entry1 else entry2
     }
 
-    fun queryMinInRange(left: Float, right: Float): Entry? {
-        return queryMinInRange(1, 0, arr.size - 1, left, right)
+    fun queryMinInRange(fromEntryX: Float, toEntryX: Float): Entry? {
+        return queryMinInRange(1, 0, arr.size - 1, fromEntryX, toEntryX)
     }
 
-    private fun queryMinInRange(node: Int, start: Int, end: Int, left: Float, right: Float): Entry? {
+    private fun queryMinInRange(node: Int, start: Int, end: Int, fromEntryX: Float, toEntryX: Float): Entry? {
         if (lazyForMin[node] != 0f) {
             treeForMin[node]?.let {
                 treeForMin[node] = Entry(it.x, it.y + lazyForMin[node])
@@ -67,25 +67,25 @@ class SegmentTree(private val arr: List<Entry>) {
             lazyForMin[node] = 0f
         }
 
-        if (start > right || end < left) {
+        if (start > toEntryX || end < fromEntryX) {
             return null
         }
 
-        if(start >= left && end <= right) {
+        if(start >= fromEntryX && end <= toEntryX) {
             return treeForMin[node]
         }
 
         val mid = (start + end) / 2
-        val leftChild = queryMinInRange(2 * node, start, mid, left, right)
-        val rightChild = queryMinInRange(2 * node + 1, mid + 1, end, left, right)
+        val leftChild = queryMinInRange(2 * node, start, mid, fromEntryX, toEntryX)
+        val rightChild = queryMinInRange(2 * node + 1, mid + 1, end, fromEntryX, toEntryX)
         return minEntry(leftChild, rightChild)
     }
 
-    fun queryMaxInRange(left: Float, right: Float): Entry? {
-        return queryForMax(1, 0, arr.size - 1, left, right)
+    fun queryMaxInRange(fromEntryX: Float, toEntryX: Float): Entry? {
+        return queryForMax(1, 0, arr.size - 1, fromEntryX, toEntryX)
     }
 
-    private fun queryForMax(node: Int, start: Int, end: Int, left: Float, right: Float): Entry? {
+    private fun queryForMax(node: Int, start: Int, end: Int, fromEntryX: Float, toEntryX: Float): Entry? {
         if (lazyForMax[node] != 0f) {
             treeForMax[node]?.let {
                 treeForMax[node] = Entry(it.x, it.y + lazyForMax[node])
@@ -97,17 +97,17 @@ class SegmentTree(private val arr: List<Entry>) {
             lazyForMax[node] = 0f
         }
 
-        if (start > right || end < left) {
+        if (start > toEntryX || end < fromEntryX) {
             return null // Change here
         }
 
-        if (start >= left && end <= right) {
+        if (start >= fromEntryX && end <= toEntryX) {
             return treeForMax[node]
         }
 
         val mid = (start + end) / 2
-        val leftChild = queryForMax(2 * node, start, mid, left, right)
-        val rightChild = queryForMax(2 * node + 1, mid + 1, end, left, right)
+        val leftChild = queryForMax(2 * node, start, mid, fromEntryX, toEntryX)
+        val rightChild = queryForMax(2 * node + 1, mid + 1, end, fromEntryX, toEntryX)
         return maxEntry(leftChild, rightChild) // Change here
     }
 
