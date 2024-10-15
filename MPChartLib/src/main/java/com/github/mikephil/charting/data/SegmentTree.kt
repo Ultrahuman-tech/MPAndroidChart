@@ -243,9 +243,15 @@ class SegmentTree(private val arr: List<Entry>) {
         }
 
         val insertionPoint = -result - 1
-        return if ((listOfEntryX[insertionPoint] - value) < (value - listOfEntryX[insertionPoint - 1]))
+        return if (insertionPoint == 0) {
             listOfEntryX[insertionPoint]
-        else
+        } else if (insertionPoint == listOfEntryX.size) {
             listOfEntryX[insertionPoint - 1]
+        } else {
+            if ((listOfEntryX[insertionPoint] - value) < (value - listOfEntryX[insertionPoint - 1]))
+                listOfEntryX[insertionPoint]
+            else
+                listOfEntryX[insertionPoint - 1]
+        }
     }
 }
