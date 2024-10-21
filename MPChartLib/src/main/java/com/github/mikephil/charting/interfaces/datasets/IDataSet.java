@@ -91,6 +91,19 @@ public interface IDataSet<T extends Entry> {
      * Returns the first Entry object found at the given x-value with binary
      * search.
      * If the no Entry at the specified x-value is found, this method
+     * returns the Entry at the closest x-value according to the insertion point
+     * at which the key would be inserted into the array.
+     * INFORMATION: This method does calculations at runtime. Do
+     * not over-use in performance critical situations.
+     *
+     * @param xValue the x-value
+     */
+    T getEntryForXValue(float xValue);
+
+    /**
+     * Returns the first Entry object found at the given x-value with binary
+     * search.
+     * If the no Entry at the specified x-value is found, this method
      * returns the Entry at the closest x-value.
      * INFORMATION: This method does calculations at runtime. Do
      * not over-use in performance critical situations.
@@ -109,7 +122,6 @@ public interface IDataSet<T extends Entry> {
      * not over-use in performance critical situations.
      *
      * @param xValue
-     * @return
      */
     List<T> getEntriesForXValue(float xValue);
 
@@ -136,6 +148,19 @@ public interface IDataSet<T extends Entry> {
      * @return
      */
     int getEntryIndex(float xValue, float closestToY, DataSet.Rounding rounding);
+
+    /**
+     * Returns the first Entry index found at the given x-value with binary
+     * search.
+     * If the no Entry at the specified x-value is found, this method
+     * returns the insertion point at which the key would be inserted into the array
+     * INFORMATION: This method does calculations at runtime. Do
+     * not over-use in performance critical situations.
+     *
+     * @param xValue the x-value
+     * @return
+     */
+    int getNearestEntryIndex(float xValue);
 
     /**
      * Returns the position of the provided entry in the DataSets Entry array.

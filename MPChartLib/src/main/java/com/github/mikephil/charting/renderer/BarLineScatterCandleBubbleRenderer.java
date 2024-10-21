@@ -79,17 +79,16 @@ public abstract class BarLineScatterCandleBubbleRenderer extends DataRenderer {
          * @param chart
          * @param dataSet
          */
+        // TODO: 19/10/24 has to be optimised. Is a source of ANRs
         public void set(BarLineScatterCandleBubbleDataProvider chart, IBarLineScatterCandleBubbleDataSet dataSet) {
             float phaseX = Math.max(0.f, Math.min(1.f, mAnimator.getPhaseX()));
 
             float low = chart.getLowestVisibleX();
             float high = chart.getHighestVisibleX();
 
-            Entry entryFrom = dataSet.getEntryForXValue(low, Float.NaN, DataSet.Rounding.DOWN);
-            Entry entryTo = dataSet.getEntryForXValue(high, Float.NaN, DataSet.Rounding.UP);
-
-            min = entryFrom == null ? 0 : dataSet.getEntryIndex(entryFrom);
-            max = entryTo == null ? 0 : dataSet.getEntryIndex(entryTo);
+            // todo check what happens if index is -1 or equal to dataset size
+            min = dataSet.getNearestEntryIndex(low);
+            max = dataSet.getNearestEntryIndex(high);
             range = (int) ((max - min) * phaseX);
         }
     }
