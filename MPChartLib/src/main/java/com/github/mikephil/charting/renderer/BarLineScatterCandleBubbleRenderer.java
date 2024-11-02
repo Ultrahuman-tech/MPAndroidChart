@@ -86,9 +86,11 @@ public abstract class BarLineScatterCandleBubbleRenderer extends DataRenderer {
             float low = chart.getLowestVisibleX();
             float high = chart.getHighestVisibleX();
 
-            // todo check what happens if index is -1 or equal to dataset size
             min = dataSet.getNearestEntryIndex(low);
             max = dataSet.getNearestEntryIndex(high);
+            if (max == dataSet.getEntryCount()) {
+                max = max - 1;
+            }
             range = (int) ((max - min) * phaseX);
         }
     }
