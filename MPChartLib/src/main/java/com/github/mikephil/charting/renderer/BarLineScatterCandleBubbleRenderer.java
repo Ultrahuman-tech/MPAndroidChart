@@ -1,7 +1,6 @@
 package com.github.mikephil.charting.renderer;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
-import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.interfaces.dataprovider.BarLineScatterCandleBubbleDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.IBarLineScatterCandleBubbleDataSet;
@@ -87,6 +86,9 @@ public abstract class BarLineScatterCandleBubbleRenderer extends DataRenderer {
             float high = chart.getHighestVisibleX();
 
             min = dataSet.getNearestEntryIndex(low);
+            if (min == dataSet.getEntryCount()) {
+                min = min  - 1;
+            }
             max = dataSet.getNearestEntryIndex(high);
             if (max == dataSet.getEntryCount()) {
                 max = max - 1;
