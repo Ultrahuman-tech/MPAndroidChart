@@ -15,18 +15,18 @@ import kotlin.math.pow
 class SegmentTree(private val arr: List<Entry>) {
 
     private val treeForMin: Array<Entry?>
-    private val lazyForMin: FloatArray
+//    private val lazyForMin: FloatArray
     private val treeForMax: Array<Entry?>
-    private val lazyForMax: FloatArray
+//    private val lazyForMax: FloatArray
     private val entryXToIndexMap = mutableMapOf<Float, Int>()
     private val listOfEntryX = FloatArray(arr.size)
 
     init {
         val n = arr.size
         //Height of segment tree
-        val x = ceil(ln(n.toDouble()) / ln(2.0)).toInt()
+        val x = ceil(ln(n.toDouble()) / ln(2.0))
         //Maximum size of segment tree
-        val treeSize = 2 * (2.0).pow(x.toDouble()).toInt() - 1
+        val treeSize = 2 * (2.0).pow(x).toInt() - 1
 
         arr.forEachIndexed { index, entry -> entryXToIndexMap[entry.x] = index }
         arr.map { it.x }.let {
@@ -34,12 +34,12 @@ class SegmentTree(private val arr: List<Entry>) {
         }
 
         treeForMin = arrayOfNulls(4 * n) // Allocate space for the tree
-        lazyForMin = FloatArray(4 * n) // Allocate space for lazy propagation
+//        lazyForMin = FloatArray(4 * n) // Allocate space for lazy propagation
         if (n > 0) {
             buildTreeForMin(1, 0, n - 1)
         }
         treeForMax = arrayOfNulls(4 * n)
-        lazyForMax = FloatArray(4 * n)
+//        lazyForMax = FloatArray(4 * n)
         if (n > 0) {
             buildTreeForMax(1, 0, n - 1)
         }
@@ -90,16 +90,16 @@ class SegmentTree(private val arr: List<Entry>) {
     }
 
     private fun queryMinInRange(node: Int, start: Int, end: Int, left: Int, right: Int): Entry? {
-        if (lazyForMin[node] != 0f) {
-            treeForMin[node]?.let {
-                treeForMin[node] = Entry(it.x, it.y + lazyForMin[node])
-            }
-            if (start != end) {
-                lazyForMin[2 * node] += lazyForMin[node]
-                lazyForMin[2 * node + 1] += lazyForMin[node]
-            }
-            lazyForMin[node] = 0f
-        }
+//        if (lazyForMin[node] != 0f) {
+//            treeForMin[node]?.let {
+//                treeForMin[node] = Entry(it.x, it.y + lazyForMin[node])
+//            }
+//            if (start != end) {
+//                lazyForMin[2 * node] += lazyForMin[node]
+//                lazyForMin[2 * node + 1] += lazyForMin[node]
+//            }
+//            lazyForMin[node] = 0f
+//        }
 
         if (start > right || end < left) {
             return null
@@ -126,16 +126,16 @@ class SegmentTree(private val arr: List<Entry>) {
     }
 
     private fun queryForMax(node: Int, start: Int, end: Int, left: Int, right: Int): Entry? {
-        if (lazyForMax[node] != 0f) {
-            treeForMax[node]?.let {
-                treeForMax[node] = Entry(it.x, it.y + lazyForMax[node])
-            }
-            if (start != end) {
-                lazyForMax[2 * node] += lazyForMax[node]
-                lazyForMax[2 * node + 1] += lazyForMax[node]
-            }
-            lazyForMax[node] = 0f
-        }
+//        if (lazyForMax[node] != 0f) {
+//            treeForMax[node]?.let {
+//                treeForMax[node] = Entry(it.x, it.y + lazyForMax[node])
+//            }
+//            if (start != end) {
+//                lazyForMax[2 * node] += lazyForMax[node]
+//                lazyForMax[2 * node + 1] += lazyForMax[node]
+//            }
+//            lazyForMax[node] = 0f
+//        }
 
         if (start > right || end < left) {
             return null // Change here
@@ -160,16 +160,16 @@ class SegmentTree(private val arr: List<Entry>) {
     }
 
     private fun updateForMin(node: Int, start: Int, end: Int, left: Float, right: Float, value: Float) {
-        if (lazyForMin[node] != 0f) {
-            treeForMin[node]?.let {
-                treeForMin[node] = Entry(it.x, it.y + lazyForMin[node])
-            }
-            if (start != end) {
-                lazyForMin[2 * node] += lazyForMin[node]
-                lazyForMin[2 * node + 1] += lazyForMin[node]
-            }
-            lazyForMin[node] = 0f
-        }
+//        if (lazyForMin[node] != 0f) {
+//            treeForMin[node]?.let {
+//                treeForMin[node] = Entry(it.x, it.y + lazyForMin[node])
+//            }
+//            if (start != end) {
+//                lazyForMin[2 * node] += lazyForMin[node]
+//                lazyForMin[2 * node + 1] += lazyForMin[node]
+//            }
+//            lazyForMin[node] = 0f
+//        }
 
         if (start > right || end < left) {
             return
@@ -180,8 +180,8 @@ class SegmentTree(private val arr: List<Entry>) {
                 treeForMin[node] = Entry(it.x, it.y + value)
             }
             if (start != end) {
-                lazyForMin[2 * node] += value
-                lazyForMin[2 * node + 1] += value
+//                lazyForMin[2 * node] += value
+//                lazyForMin[2 * node + 1] += value
             }
             return
         }
@@ -193,16 +193,16 @@ class SegmentTree(private val arr: List<Entry>) {
     }
 
     private fun updateForMax(node: Int, start: Int, end: Int, left: Float, right: Float, value: Float) {
-        if (lazyForMax[node] != 0f) {
-            treeForMax[node]?.let {
-                treeForMax[node] = Entry(it.x, it.y + lazyForMax[node])
-            }
-            if (start != end) {
-                lazyForMax[2 * node] += lazyForMax[node]
-                lazyForMax[2 * node + 1] += lazyForMax[node]
-            }
-            lazyForMax[node] = 0f
-        }
+//        if (lazyForMax[node] != 0f) {
+//            treeForMax[node]?.let {
+//                treeForMax[node] = Entry(it.x, it.y + lazyForMax[node])
+//            }
+//            if (start != end) {
+//                lazyForMax[2 * node] += lazyForMax[node]
+//                lazyForMax[2 * node + 1] += lazyForMax[node]
+//            }
+//            lazyForMax[node] = 0f
+//        }
 
         if (start > right || end < left) {
             return
@@ -213,8 +213,8 @@ class SegmentTree(private val arr: List<Entry>) {
                 treeForMax[node] = Entry(it.x, it.y + value)
             }
             if (start != end) {
-                lazyForMax[2 * node] += value
-                lazyForMax[2 * node + 1] += value
+//                lazyForMax[2 * node] += value
+//                lazyForMax[2 * node + 1] += value
             }
             return
         }
