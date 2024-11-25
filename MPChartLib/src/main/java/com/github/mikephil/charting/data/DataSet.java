@@ -3,7 +3,6 @@ package com.github.mikephil.charting.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -326,7 +325,7 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
     @Override
     public T getEntryForXValue(float xValue) {
         int index = getNearestEntryIndex(xValue);
-        if (index > -1)
+        if (index > -1 && index < mEntries.size())
             return mEntries.get(index);
         return null;
     }
