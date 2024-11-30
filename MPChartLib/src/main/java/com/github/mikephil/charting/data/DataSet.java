@@ -2,6 +2,7 @@
 package com.github.mikephil.charting.data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -18,6 +19,7 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
      * the entries that this DataSet represents / holds together
      */
     protected List<T> mEntries;
+    protected SegmentTree segmentTree;
 
     /**
      * maximum y-value in the value array
@@ -55,6 +57,8 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
         if (mEntries == null)
             mEntries = new ArrayList<T>();
 
+        segmentTree = new SegmentTree(mEntries);
+
         calcMinMax();
     }
 
@@ -78,20 +82,28 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
     public void calcMinMaxY(float fromX, float toX) {
         mYMax = -Float.MAX_VALUE;
         mYMin = Float.MAX_VALUE;
-        
+
         if (mEntries == null || mEntries.isEmpty())
             return;
 
-        int indexFrom = getEntryIndex(fromX, Float.NaN, Rounding.DOWN);
-        int indexTo = getEntryIndex(toX, Float.NaN, Rounding.UP);
-
-        if (indexTo < indexFrom) return;
-
-        for (int i = indexFrom; i <= indexTo; i++) {
-
-            // only recalculate y
-            calcMinMaxY(mEntries.get(i));
+        Entry minEntry = segmentTree.queryMinInRange(fromX, toX);
+        Entry maxEntry = segmentTree.queryMaxInRange(fromX, toX);
+        if (minEntry != null) {
+            mYMin = minEntry.getY();
         }
+        if (maxEntry != null) {
+            mYMax = maxEntry.getY();
+        }
+//        int indexFrom = getEntryIndex(fromX, Float.NaN, Rounding.DOWN);
+//        int indexTo = getEntryIndex(toX, Float.NaN, Rounding.UP);
+
+//        if (indexTo < indexFrom) return;
+//
+//        for (int i = indexFrom; i <= indexTo; i++) {
+//
+//            // only recalculate y
+//            calcMinMaxY(mEntries.get(i));
+//        }
     }
 
     /**
@@ -170,6 +182,7 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
      */
     public void setEntries(List<T> entries) {
         mEntries = entries;
+        segmentTree = new SegmentTree(mEntries);
         notifyDataSetChanged();
     }
 
@@ -249,11 +262,13 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
         } else {
             mEntries.add(e);
         }
+        segmentTree = new SegmentTree(mEntries); // todo call update here --
     }
 
     @Override
     public void clear() {
         mEntries.clear();
+        segmentTree = new SegmentTree(mEntries);
         notifyDataSetChanged();
     }
 
@@ -308,6 +323,14 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
     }
 
     @Override
+    public T getEntryForXValue(float xValue) {
+        int index = getNearestEntryIndex(xValue);
+        if (index > -1 && index < mEntries.size())
+            return mEntries.get(index);
+        return null;
+    }
+
+    @Override
     public T getEntryForXValue(float xValue, float closestToY) {
         return getEntryForXValue(xValue, closestToY, Rounding.CLOSEST);
     }
@@ -317,9 +340,18 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
         return mEntries.get(index);
     }
 
+    /**
+     * PSA on top of the parent documentation.
+     * This method can cause ANRs when dataset is too large.
+     *
+     * @param xValue the x-value
+     * @param closestToY If there are multiple y-values for the specified x-value,
+     * @param rounding determine whether to round up/down/closest
+     *                 if there is no Entry matching the provided x-value
+     * @return
+     */
     @Override
     public int getEntryIndex(float xValue, float closestToY, Rounding rounding) {
-
         if (mEntries == null || mEntries.isEmpty())
             return -1;
 
@@ -400,6 +432,36 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
         }
 
         return closest;
+    }
+
+    @Override
+    public int getNearestEntryIndex(float xValue) {
+        if (mEntries == null || mEntries.isEmpty())
+            return -1;
+        if (xValue < mEntries.get(0).getX()) {
+            return 0;
+        }
+        if (xValue > mEntries.get(mEntries.size() - 1).getX()) {
+            return mEntries.size() - 1;
+        }
+        Entry[] entries = new Entry[0];
+        int result = Arrays.binarySearch(
+            mEntries.toArray(entries),
+            new Entry(xValue, Float.NaN),
+            (o1, o2) -> Float.compare(o1.getX(), o2.getX())
+        );
+        if (result >= 0) {
+            return result;
+        }
+        int insertionPoint = -result - 1;
+        if (insertionPoint == 0 || insertionPoint == mEntries.size()) {
+            return insertionPoint;
+        } else {
+            if ((mEntries.get(insertionPoint).getX() - xValue) < (xValue - mEntries.get(insertionPoint - 1).getX()))
+                return insertionPoint;
+            else
+                return insertionPoint - 1;
+        }
     }
 
     @Override

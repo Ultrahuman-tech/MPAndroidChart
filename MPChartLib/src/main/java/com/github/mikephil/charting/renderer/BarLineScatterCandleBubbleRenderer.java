@@ -1,7 +1,6 @@
 package com.github.mikephil.charting.renderer;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
-import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.interfaces.dataprovider.BarLineScatterCandleBubbleDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.IBarLineScatterCandleBubbleDataSet;
@@ -79,17 +78,21 @@ public abstract class BarLineScatterCandleBubbleRenderer extends DataRenderer {
          * @param chart
          * @param dataSet
          */
+        // TODO: 19/10/24 has to be optimised. Is a source of ANRs
         public void set(BarLineScatterCandleBubbleDataProvider chart, IBarLineScatterCandleBubbleDataSet dataSet) {
             float phaseX = Math.max(0.f, Math.min(1.f, mAnimator.getPhaseX()));
 
             float low = chart.getLowestVisibleX();
             float high = chart.getHighestVisibleX();
 
-            Entry entryFrom = dataSet.getEntryForXValue(low, Float.NaN, DataSet.Rounding.DOWN);
-            Entry entryTo = dataSet.getEntryForXValue(high, Float.NaN, DataSet.Rounding.UP);
-
-            min = entryFrom == null ? 0 : dataSet.getEntryIndex(entryFrom);
-            max = entryTo == null ? 0 : dataSet.getEntryIndex(entryTo);
+            min = dataSet.getNearestEntryIndex(low);
+            if (min == dataSet.getEntryCount()) {
+                min = min  - 1;
+            }
+            max = dataSet.getNearestEntryIndex(high);
+            if (max == dataSet.getEntryCount()) {
+                max = max - 1;
+            }
             range = (int) ((max - min) * phaseX);
         }
     }
